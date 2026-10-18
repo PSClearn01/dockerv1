@@ -1,0 +1,45 @@
+services:
+  # Docker Socket Proxy - Security Enchanced Proxy for Docker Socket
+  socket-proxy:
+    image: lscr.io/linuxserver/socket-proxy:latest
+    container_name: socket-proxy
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    profiles: ["core", "all"]
+    networks:
+      socket_proxy:
+        ipv4_address: 192.168.91.254 # You can specify a static IP
+    privileged: true # true for VM. False (default) for unprivileged LXC container.
+    # ports:
+      #- "2375:2375"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    read_only: true
+    tmpfs:
+      - /run
+    environment:
+      # Required for Dockhand core functionality
+      - CONTAINERS=1
+      - IMAGES=1
+      - NETWORKS=1
+      - VOLUMES=1
+      - EVENTS=1
+      - POST=1
+      - DELETE=1
+      # Required for dashboard host info and disk usage
+      - INFO=1
+      - SYSTEM=1
+      # Required for vulnerability scanning
+      - ALLOW_START=1
+      - ALLOW_STOP=1
+      - ALLOW_RESTARTS=1
+      # Required to view container logs, AND for vulnerability scanning:
+      # Dockhand reads the scanner container's output through the logs API
+      - ALLOW_LOGS=1
+      # Optional: enable for the container terminal, volume browsing,
+      # and the in-container file browser (all use the Docker exec API)
+      - EXEC=1
+      # Optional: enable if you use Backups behind the proxy (the backup
+      # helper streams files via the archive API)
+      # - ALLOW_ARCHIVE=1

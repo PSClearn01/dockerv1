@@ -1,0 +1,47 @@
+---
+services:
+  psc-dns-01:
+    image: docker.io/technitium/dns-server:15.1.0
+    restart: unless-stopped
+    container_name: psc-dns-01
+    hostname: psc-dns-01
+    environment:
+      - DNS_SERVER_DOMAIN=devpurosurccd.com
+      - DNS_SERVER_ADMIN_PASSWORD=${DNS_SERVER_ADMIN_PASSWORD}
+      - DNS_SERVER_LOG_FOLDER_PATH=/var/log/technitium/dns
+      - DNS_SERVER_LOG_USING_LOCAL_TIME=true
+      - DNS_SERVER_RECURSION=AllowOnlyForPrivateNetworks
+      - DNS_SERVER_FORWARDERS=1.1.1.1,9.9.9.9
+      - DNS_SERVER_FORWARDER_PROTOCOL=Udp
+    networks:
+      traefik_proxy:
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    volumes:
+      - psc-dns-01_config:/etc/dns
+      - psc-dns-01_logs:/var/log/technitium/dns
+    sysctls:
+      - net.ipv4.ip_local_port_range=1024 65535
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik_proxy
+      - traefik.http.services.psc-dns-01-web.loadBalancer.server.port=5380
+      - traefik.http.routers.psc-dns-01-http.service=psc-dns-01-web
+      - traefik.http.routers.psc-dns-01-http.rule=Host(`psc-dns-01.devpurosurccd.com`)
+      - traefik.http.routers.psc-dns-01-http.entrypoints=web-internal
+      - traefik.http.routers.psc-dns-01-https.service=psc-dns-01-web
+      - traefik.http.routers.psc-dns-01-https.rule=Host(`psc-dns-01.devpurosurccd.com`)
+      - traefik.http.routers.psc-dns-01-https.entrypoints=websecure-internal
+      - traefik.http.routers.psc-dns-01-https.tls=true
+      - traefik.http.routers.psc-dns-01-https.tls.certresolver=cloudflare
+
+networks:
+  traefik_proxy:
+    external: true
+
+volumes:
+  psc-dns-01_config:
+    driver: local
+  psc-dns-01_logs:
+    driver: local

@@ -1,0 +1,38 @@
+services:
+  ntfy:
+    image: binwiederhier/ntfy
+    security_opt:
+      - no-new-privileges:true
+    profiles: ["apps", "all"]
+    command: serve
+    environment:
+      # Note: $ is doubled to $$ for docker-compose
+      NTFY_BASE_URL: "https://pscntfy.devpurosurccd.com"
+      NTFY_BEHIND_PROXY: "true"
+      NTFY_AUTH_FILE: "/var/lib/ntfy/auth.db"
+      NTFY_AUTH_DEFAULT_ACCESS: "deny-all"
+      NTFY_ENABLE_LOGIN: "true"
+      NTFY_REQUIRE_LOGIN: "true"
+      NTFY_ENABLE_SIGNUP: "true"
+      NTFY_ATTACHMENT_CACHE_DIR: "/var/cache/ntfy/attachments"
+      NTFY_CACHE_FILE: "/var/cache/ntfy/cache.db"
+      NTFY_WEB_PUSH_PUBLIC_KEY: "BJTVvPi2pI32W-rKoy9uDVoHm75XWXsuXdXm916Pe9in2rp43AUbu1YUQ_sQr_YAlNsZrEMWTU83rTbmK0BNw0U"
+      NTFY_WEB_PUSH_PRIVATE_KEY: "2rp43AUbu1YUQ_sQr_YAlNsZrEMWTU83rTbmK0BNw0U"
+      NTFY_WEB_PUSH_FILE: "/var/lib/ntfy/webpush.db"
+      NTFY_WEB_PUSH_EMAIL_ADDRESS: "pscadmin@purosurccd.com"
+      NTFY_SMTP_SENDER_ADDR: "smtp.google.com:587"
+      NTFY_SMTP_SENDER_FROM: "pscadmin@purosurccd.com"
+      NTFY_SMTP_SENDER_USER: "purosurbxo@gmail.com"
+      NTFY_SMTP_SENDER_PASS: "uscsbjcpbagcsexu"
+      NTFY_SMTP_SERVER_LISTEN: ":25"
+      NTFY_SMTP_SERVER_DOMAIN: "pscntfy.devpurosurccd.com"
+      NTFY_AUTH_USERS: "pscadmin:$$2b$$10$$iPxhUZW2aKhHnKGn.PQ5m.Ux9v3DO/2C5OEdLNt10HUBLH4lON9ZW:admin,aallen:$$2b$$10$$Db2lfecgV1bXucR/e4N8ket.YTf9pt451J4IeHGLLr6HXB27mTgiy:user"
+      NTFY_AUTH_ACCESS: "*:up*:write-only,aallen:aallen-alerts*:read-write"
+      NTFY_AUTH_TOKENS: "pscadmin:tk_4q2adfi8pytmo3kyjohakt91keeqw"
+    volumes:
+      - $DOCKERDIR/appdata/ntfy/var/cache/ntfy:/var/cache/ntfy
+      - $DOCKERDIR/appdata/ntfy/var/cache/ntfy/attachments:/var/cache/ntfy/attachments
+      - $DOCKERDIR/appdata/ntfy/var/lib/ntfy:/var/lib/ntfy
+    ports:
+      - "$NTFY_PORT:80"
+    restart: unless-stopped

@@ -1,0 +1,61 @@
+########################### NETWORKS
+# You may customize the network subnets (192.168.x.0/24) below as you please.
+networks:
+  default:
+    driver: bridge
+  socket_proxy:
+    name: socket_proxy
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.91.0/24
+  traefik_proxy:
+    name: traefik_proxy
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.90.0/24
+    # NETWORKS-PLACEHOLDER-DO-NOT-DELETE
+
+    ########################### SECRETS
+secrets:
+  basic_auth_credentials:
+    file: $DOCKERDIR/secrets/basic_auth_credentials
+  cf_dns_api_token:
+    file: $DOCKERDIR/secrets/cf_dns_api_token
+  # postgres_default_password:
+  #   file: $DOCKERDIR/secrets/postgres_default_password
+  # authentik_postgresql_user:
+  #   file: $DOCKERDIR/secrets/authentik_postgresql_user
+  # authentik_postgresql_password:
+  #   file: $DOCKERDIR/secrets/authentik_postgresql_password
+  # authentik_secret_key:
+  #   file: $DOCKERDIR/secrets/authentik_secret_key
+  # SECRETS-PLACEHOLDER-DO-NOT-DELETE
+
+include:
+  ########################### SERVICES
+  # HOSTNAME defined in .env file
+
+  # - compose/$HOSTNAME/custom.yml
+
+  # CORE
+  - compose/$HOSTNAME/socket-proxy.yml
+  - compose/$HOSTNAME/traefik.yml
+
+  # MEDIA
+
+
+  # APPS
+  - compose/$HOSTNAME/dozzle.yml
+  - compose/$HOSTNAME/ntfy.yml
+  - compose/$HOSTNAME/traefik-access-log.yml
+  - compose/$HOSTNAME/traefik-error-log.yml
+  # DBS
+
+
+  # MONITORING
+  - compose/$HOSTNAME/checkmk.yml
+
+
+  # SERVICE-PLACEHOLDER-DO-NOT-DELETE
